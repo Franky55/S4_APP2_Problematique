@@ -51,6 +51,16 @@ end mef_decod_i2s_v1b;
 
 architecture Behavioral of mef_decod_i2s_v1b is
 
+    type fsm_cI2S_etats is (
+         E0,
+         E1,
+         E2,
+         E3,
+         E4,
+         E5
+         );
+       
+   signal fsm_EtatCourant, fsm_prochainEtat : fsm_cI2S_etats;
     signal   d_reclrc_prec  : std_logic ;  --
     
 begin
