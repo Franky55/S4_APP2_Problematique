@@ -61,9 +61,18 @@ architecture Behavioral of mef_decod_i2s_v1b is
          );
        
    signal fsm_EtatCourant, fsm_prochainEtat : fsm_cI2S_etats;
-    signal   d_reclrc_prec  : std_logic ;  --
+   signal   d_reclrc_prec  : std_logic ;  --
+   signal outputs : std_logic_vector(4 downto 0);
     
 begin
+
+   --Selection d'etat
+   select_etat: process(i_bclk)
+     begin
+        if(rising_edge(i_bclk)) then
+            fsm_EtatCourant <= fsm_prochainEtat;
+        end if;
+     end process;
 
    -- pour detecter transitions d_ac_reclrc
    reglrc_I2S: process ( i_bclk)
@@ -80,42 +89,61 @@ begin
       end process;
       
 
-     -- decodage compteur avec case ...   
-        sig_ctrl_I2S:  process (i_cpt_bits, i_lrc )
-            begin
-                case i_cpt_bits is
-                 when "0000000" =>
-                     o_bit_enable     <= '1';
-                     o_load_left      <= '0';
-                     o_load_right     <= '0';
-                     o_str_dat        <= '0';
-                 when   "0000001"  |  "0000010"  |  "0000011"  |  "0000100"  
-                       |  "0000101"  |  "0000110"  |  "0000111"  |  "0001000" 
-                       |  "0001001"  |  "0001010"  |  "0001011"  |  "0001100" 
-                       |  "0001101"  |  "0001110"  |  "0001111"  |  "0010000"  
-                       |  "0010001"  |  "0010010"  |  "0010011"  |  "0010100" 
-                       |  "0010101"  |  "0010110"  |  "0010111"   
-                    =>
-                     o_bit_enable     <= '1';
-                     o_load_left      <= '0';
-                     o_load_right     <= '0';
-                     o_str_dat        <= '0';
-                 when   "0011000"  =>
-                     o_bit_enable     <= '0';
-                     o_load_left      <= not i_lrc;
-                     o_load_right     <=  i_lrc;
-                     o_str_dat        <= '0';
-                 when    "0011001"  =>
-                    o_bit_enable     <= '0';
-                    o_load_left     <= '0';
-                    o_load_right     <= '0';
-                    o_str_dat        <=  i_lrc;
-                 when  others  =>
-                    o_bit_enable     <= '0';
-                    o_load_left      <= '0';
-                    o_load_right     <= '0';
-                    o_str_dat        <= '0';
-                 end case;
-             end process;
+    transitionsLecture: process(fsm_EtatCourant)
+    begin
+        case fsm_EtatCourant is
+            when E1 =>
+                if (i_cpt_bits = "011000") then
+                    fsm_prochainEtat <= E2;
+                end if;
+            when E2 =>
+                fsm_prochainEtat <= E3;
+            when E4 =>
+                if (i_cpt_bits = "011000") then
+                    fsm_prochainEtat <= E5;
+                end if;
+            when E5 =>
+                fsm_prochainEtat <= E0;
+        end case;
 
-     end Behavioral;
+ end process;
+ 
+    transitionWaiting: process(i_lrc, fsm_EtatCourant)
+    begin
+        if (falling_edge(i_lrc)) then
+            if (fsm_EtatCourant /= E0) then
+                fsm_prochainEtat <= E1;
+            else
+                fsm_prochainEtat <= E0;
+            end if;
+        end if;
+        
+        if (rising_edge(i_lrc)) then
+            if (fsm_EtatCourant /= E3) then
+                fsm_prochainEtat <= E4;
+            else
+                fsm_prochainEtat <= E0;
+            end if;
+        end if;
+    end process;
+
+    setVariables: process(fsm_EtatCourant)
+    begin
+        case fsm_EtatCourant is
+                when E0     => outputs <= "00001";
+                when E1     => outputs <= "10000";
+                when E2     => outputs <= "01001";
+                when E3     => outputs <= "00001";
+                when E4     => outputs <= "10000";
+                when E5     => outputs <= "00101";
+                when others => outputs <= "00001";
+            end case;
+    end process;
+    
+    o_bit_enable    <= outputs(0);
+    o_load_left     <= outputs(1);
+    o_load_right    <= outputs(2);
+    --o_str_dat     <= outputs(3);
+    o_cpt_bit_reset <= outputs(4);
+
+end Behavioral;
