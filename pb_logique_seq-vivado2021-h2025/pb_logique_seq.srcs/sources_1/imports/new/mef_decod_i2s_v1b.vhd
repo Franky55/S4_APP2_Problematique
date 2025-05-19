@@ -89,29 +89,31 @@ begin
       end process;
       
 
-    transitionsLecture: process(fsm_EtatCourant)
+    transitionsLecture: process(fsm_EtatCourant, i_bclk)
     begin
-        case fsm_EtatCourant is
-            when E1 =>
-                if (i_cpt_bits = "011000") then
-                    fsm_prochainEtat <= E2;
-                end if;
-            when E2 =>
-                fsm_prochainEtat <= E3;
-            when E4 =>
-                if (i_cpt_bits = "011000") then
-                    fsm_prochainEtat <= E5;
-                end if;
-            when E5 =>
-                fsm_prochainEtat <= E0;
-        end case;
+        if (rising_edge(i_bclk)) then
+            case fsm_EtatCourant is
+                when E1 =>
+                    if (i_cpt_bits = "011000") then
+                        fsm_prochainEtat <= E2;
+                    end if;
+                when E2 =>
+                    fsm_prochainEtat <= E3;
+                when E4 =>
+                    if (i_cpt_bits = "011000") then
+                        fsm_prochainEtat <= E5;
+                    end if;
+                when E5 =>
+                    fsm_prochainEtat <= E0;
+            end case;
+          end if;
 
  end process;
  
     transitionWaiting: process(i_lrc, fsm_EtatCourant)
     begin
         if (falling_edge(i_lrc)) then
-            if (fsm_EtatCourant /= E0) then
+            if (fsm_EtatCourant = E0) then
                 fsm_prochainEtat <= E1;
             else
                 fsm_prochainEtat <= E0;
@@ -119,7 +121,7 @@ begin
         end if;
         
         if (rising_edge(i_lrc)) then
-            if (fsm_EtatCourant /= E3) then
+            if (fsm_EtatCourant = E3) then
                 fsm_prochainEtat <= E4;
             else
                 fsm_prochainEtat <= E0;
