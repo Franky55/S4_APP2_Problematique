@@ -57,6 +57,8 @@ architecture Behavioral of calcul_param_2 is
 ---------------------------------------------------------------------------------------------
 begin 
 
+    
+
      o_param <= x"02";    -- temporaire ...
 
 end Behavioral;

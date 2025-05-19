@@ -85,7 +85,7 @@ begin
  Port map
     ( 
       clk             =>  d_clk_p,
-      o_reset         =>  open,
+      o_reset         =>  d_reset,
       i_btn           =>  d_btn,
       i_sw            =>  d_sw,
       o_btn_cd        =>  d_btn_db,
@@ -161,8 +161,30 @@ tb : PROCESS
           d_btn <= "0000"; 
           -- Pas de assert ici - on explore le comportement d'une condition particuliere
       end loop;
+      
+      --Test Reset
+      for index_btn in 0 to 2 loop
+          wait for c_delai_commandes;  -- attendre delai
+          d_btn <= "0001";
+          wait for c_delai_commandes;  -- attendre delai
+          d_btn <= "0000";
+          -- incrementation du code de l'état attendu
+          expected_status_code <= std_logic_vector( unsigned(expected_status_code) + 1 );
+          assert (d_sel_fct = expected_status_code)
+            report "L'etat n'est pas celui attendu"
+            severity WARNING;
+      end loop;
+      
+      wait for 1000ns;
+      d_btn(3) <= '1';
+      wait for 100ns;
+      d_btn(3) <= '0';
+      expected_status_code <= "00";
+          assert (d_sel_fct = expected_status_code)
+            report "L'etat n'est pas celui attendu"
+            severity WARNING;
 
-
+      wait for 100ns;
       d_sw  <= "0000";
       d_btn <= "0000";
       
