@@ -1,11 +1,11 @@
 {
    "ActiveEmotionalView":"Default View",
    "Default View_Layers":"/clk_1:false|/i_reset_1:false|/M1_decodeur_i2s/mef_decod_i2s_v1b_0_o_cpt_bit_reset:false|/M9_codeur_i2s/mef_cod_i2s_vsb_0_o_cpt_bit_reset:false|",
-   "Default View_ScaleFactor":"0.37006",
-   "Default View_TopLeft":"-141,-105",
+   "Default View_ScaleFactor":"0.976594",
+   "Default View_TopLeft":"1195,53",
    "Display-PortTypeClock":"false",
    "Display-PortTypeReset":"false",
-   "ExpandedHierarchyInLayout":"/M1_decodeur_i2s",
+   "ExpandedHierarchyInLayout":"",
    "HideNet":"/clk_1|/i_reset_1|/M1_decodeur_i2s/mef_decod_i2s_v1b_0_o_cpt_bit_reset|/M9_codeur_i2s/mef_cod_i2s_vsb_0_o_cpt_bit_reset|",
    "comment_1":"Modules à modifier:
 MEF_decodeur_i2s (dans M1_decodeur_i2s)
@@ -33,7 +33,6 @@ preplace inst M1_decodeur_i2s -pg 1 -lvl 1 -x 150 -y 392 -defaultsOSRD
 preplace inst M9_codeur_i2s -pg 1 -lvl 1 -x 150 -y 974 -defaultsOSRD
 preplace inst M10_conversion_affichage -pg 1 -lvl 6 -x 2530 -y 270 -defaultsOSRD
 preplace inst M5_parametre_1 -pg 1 -lvl 4 -x 1950 -y 170 -defaultsOSRD
-preplace inst M6_parametre_2 -pg 1 -lvl 4 -x 1950 -y 340 -defaultsOSRD
 preplace inst M7_parametre_3 -pg 1 -lvl 4 -x 1950 -y 480 -defaultsOSRD
 preplace inst Multiplexeur_choix_fonction -pg 1 -lvl 3 -x 1630 -y 270 -defaultsOSRD
 preplace inst Multiplexeur_choix_parametre -pg 1 -lvl 5 -x 2260 -y 280 -defaultsOSRD
@@ -42,6 +41,7 @@ preplace inst M2_fonction_distortion_dure1 -pg 1 -lvl 2 -x 1320 -y 180 -defaults
 preplace inst M3_fonction_distorsion_dure2 -pg 1 -lvl 2 -x 1320 -y 280 -defaultsOSRD
 preplace inst parametre_0 -pg 1 -lvl 4 -x 1950 -y 60 -defaultsOSRD
 preplace inst M8_commande -pg 1 -lvl 2 -x 1320 -y 730 -defaultsOSRD
+preplace inst M6_parametre_2 -pg 1 -lvl 4 -x 1950 -y 340 -defaultsOSRD
 preplace inst M1_decodeur_i2s|compteur_7bits -pg 1 -lvl 1 -x 230 -y 492 -defaultsOSRD
 preplace inst M1_decodeur_i2s|registre_24bits_droite -pg 1 -lvl 3 -x 860 -y 612 -defaultsOSRD
 preplace inst M1_decodeur_i2s|registre_24bits_gauche -pg 1 -lvl 3 -x 860 -y 432 -defaultsOSRD

@@ -105,14 +105,11 @@ begin
                     end if;
                 when E5 =>
                     fsm_prochainEtat <= E0;
+                when others =>
             end case;
           end if;
-
- end process;
- 
-    transitionWaiting: process(i_lrc, fsm_EtatCourant)
-    begin
-        if (falling_edge(i_lrc)) then
+          
+          if (falling_edge(i_lrc)) then
             if (fsm_EtatCourant = E0) then
                 fsm_prochainEtat <= E1;
             else
@@ -127,8 +124,9 @@ begin
                 fsm_prochainEtat <= E0;
             end if;
         end if;
-    end process;
 
+ end process;
+ 
     setVariables: process(fsm_EtatCourant)
     begin
         case fsm_EtatCourant is
