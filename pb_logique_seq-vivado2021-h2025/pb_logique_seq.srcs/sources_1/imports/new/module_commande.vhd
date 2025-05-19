@@ -54,18 +54,21 @@ BEGIN
         o_strobe_btn  => d_strobe_btn  
          );
  
- process(clk)
- begin
-    if(rising_edge(clk)) then
-        o_reset <= d_reset;
-        EtatCourant <= EtatNext;
-        
-    end if;
+ reset_handler : process(clk)
+    begin
+        if(rising_edge(clk)) then
+            o_reset <= d_reset;
+            if (d_reset = '1') then
+                EtatCourant <= PAS_EFFET;
+            else
+                EtatCourant <= EtatNext;
+            end if;
+        end if;
  end process;
  
-transitions: process(EtatCourant)
+transitions: process(EtatCourant, clk, d_strobe_btn)
 begin
-        if (d_strobe_btn(0) = '1' and d_strobe_btn(1) = '0') then
+        if (d_strobe_btn(0) = '1' and d_strobe_btn(1) = '0' and rising_edge(clk)) then
             case EtatCourant is
                 when PAS_EFFET =>
                     EtatNext <= DISTORTION1;
@@ -77,7 +80,7 @@ begin
                     EtatNext <= PAS_EFFET;
             end case;
          
-         elsif (d_strobe_btn(1) = '1' and d_strobe_btn(0) = '0') then
+         elsif (d_strobe_btn(1) = '1' and d_strobe_btn(0) = '0' and rising_edge(clk)) then
             case EtatCourant is
                 when PAS_EFFET =>
                     EtatNext <= TEST;
