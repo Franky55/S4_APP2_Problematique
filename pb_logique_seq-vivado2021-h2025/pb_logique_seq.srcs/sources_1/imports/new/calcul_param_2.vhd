@@ -47,33 +47,54 @@ end calcul_param_2;
 
 architecture Behavioral of calcul_param_2 is
 
+    type type_etat is (
+        INIT, 
+        SOMMATION, 
+        CONVERTION,
+        IDLE) ;
+
 ---------------------------------------------------------------------------------
 -- Signaux
 ----------------------------------------------------------------------------------
-    signal sum: std_logic_vector(7 downto 0);
-    signal power: std_logic_vector(7 downto 0);
-    signal input: std_logic_vector (23 downto 0); 
+    signal sum: unsigned(63 downto 0) := (others => '0');
+    signal input: unsigned (63 downto 0); 
+    signal EtatNext, EtatCourant : type_etat ;
 
 ---------------------------------------------------------------------------------------------
 --    Description comportementale
 ---------------------------------------------------------------------------------------------
 begin 
 
-    trasitions: process (i_bclk)
+    trasitions: process (i_bclk, EtatCourant, i_ech, sum)
     begin
         if (rising_edge(i_bclk)) then
-            if(i_reset = '1') then
-                --reset value
-                sum <= (others => '0');
-            elsif(i_en = '1') then
-                input <= i_ech;
-                --sum <= (7 * sum + 8 * i_ech) / 8;
-            end if;
+            input <= resize(unsigned(i_ech), 64);
             
+            if(i_reset = '1') then
+                EtatCourant <= INIT;
+                sum <= to_unsigned(0, 64);
+                o_param <= "00000000";
+            else
+                EtatCourant <= EtatNext;
+            end if;
+            case (EtatCourant) is
+                when INIT =>
+                    if (i_en = '1') then
+                        EtatNext <= SOMMATION;
+                    end if;
+                when SOMMATION => 
+                    EtatNext <= CONVERTION;
+                    sum <= ((31/32) * sum) + (input * input);
+                when CONVERTION => 
+                    EtatNext <= IDLE;
+                    o_param <= std_logic_vector(sum(63 downto 56));
+                when IDLE =>
+                    if (i_en = '1') then
+                        EtatNext <= SOMMATION;
+                    end if;
+                when others =>
+            end case;
         end if;
-    
-         
     end process;
     
-o_param <= x"02";    -- temporaire ...
 end Behavioral;
