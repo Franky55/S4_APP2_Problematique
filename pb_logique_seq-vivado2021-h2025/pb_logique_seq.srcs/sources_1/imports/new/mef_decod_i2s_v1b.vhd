@@ -52,12 +52,12 @@ end mef_decod_i2s_v1b;
 architecture Behavioral of mef_decod_i2s_v1b is
 
     type fsm_cI2S_etats is (
-         E0,
-         E1,
-         E2,
-         E3,
-         E4,
-         E5
+         Wait_L,
+         Read_L,
+         Send_L,
+         Wait_R,
+         Read_R,
+         Send_R
          );
        
    signal fsm_EtatCourant, fsm_prochainEtat : fsm_cI2S_etats;
@@ -70,8 +70,8 @@ begin
      begin
         if(rising_edge(i_bclk)) then
             if(i_reset = '1') then
-                fsm_EtatCourant <= E0;
-                --fsm_prochainEtat <= E0;
+                fsm_EtatCourant <= Wait_L;
+                --fsm_prochainEtat <= Wait_L;
             else
                 fsm_EtatCourant <= fsm_prochainEtat;
             end if;
@@ -97,28 +97,28 @@ begin
     begin
         if (rising_edge(i_bclk)) then
             case fsm_EtatCourant is
-                when E1 =>
+                when Read_L =>
                     if (i_cpt_bits = 22) then
-                        fsm_prochainEtat <= E2;
+                        fsm_prochainEtat <= Send_L;
                     end if;
-                when E2 =>
-                    fsm_prochainEtat <= E3;
-                when E4 =>
+                when Send_L =>
+                    fsm_prochainEtat <= Wait_R;
+                when Read_R =>
                     if (i_cpt_bits = 22) then
-                        fsm_prochainEtat <= E5;
+                        fsm_prochainEtat <= Send_R;
                     end if;
-                when E5 =>
-                    fsm_prochainEtat <= E0;
+                when Send_R =>
+                    fsm_prochainEtat <= Wait_L;
                 when others =>
             end case;
         end if;
           
         if (falling_edge(i_lrc)) then
-            fsm_prochainEtat <= E1;
+            fsm_prochainEtat <= Read_L;
         end if;
         
         if (rising_edge(i_lrc)) then
-            fsm_prochainEtat <= E4;
+            fsm_prochainEtat <= Read_R;
         end if;
 
  end process;
@@ -126,12 +126,12 @@ begin
     setVariables: process(fsm_EtatCourant)
     begin
         case fsm_EtatCourant is
-            when E0     => outputs <= "00001";
-            when E1     => outputs <= "10000";
-            when E2     => outputs <= "01000";
-            when E3     => outputs <= "00001";
-            when E4     => outputs <= "10000";
-            when E5     => outputs <= "00100";
+            when Wait_L     => outputs <= "00001";
+            when Read_L     => outputs <= "10000";
+            when Send_L     => outputs <= "01000";
+            when Wait_R     => outputs <= "00001";
+            when Read_R     => outputs <= "10000";
+            when Send_R     => outputs <= "00100";
             when others => outputs <= "00001";
         end case;
     end process;
