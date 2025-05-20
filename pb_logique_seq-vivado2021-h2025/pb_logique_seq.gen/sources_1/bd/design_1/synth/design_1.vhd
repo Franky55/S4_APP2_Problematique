@@ -1,7 +1,7 @@
 --Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------
 --Tool Version: Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
---Date        : Mon May 19 13:11:17 2025
+--Date        : Mon May 19 17:43:31 2025
 --Host        : FranksLaptop running 64-bit major release  (build 9200)
 --Command     : generate_target design_1.bd
 --Design      : design_1
@@ -422,6 +422,15 @@ architecture STRUCTURE of design_1 is
     dout : out STD_LOGIC_VECTOR ( 7 downto 0 )
   );
   end component design_1_xlconstant_0_0;
+  component design_1_calcul_param_2_0_0 is
+  port (
+    i_bclk : in STD_LOGIC;
+    i_reset : in STD_LOGIC;
+    i_en : in STD_LOGIC;
+    i_ech : in STD_LOGIC_VECTOR ( 23 downto 0 );
+    o_param : out STD_LOGIC_VECTOR ( 7 downto 0 )
+  );
+  end component design_1_calcul_param_2_0_0;
   component design_1_module_commande_0_0 is
   port (
     clk : in STD_LOGIC;
@@ -433,15 +442,6 @@ architecture STRUCTURE of design_1 is
     o_selection_par : out STD_LOGIC_VECTOR ( 1 downto 0 )
   );
   end component design_1_module_commande_0_0;
-  component design_1_calcul_param_2_0_0 is
-  port (
-    i_bclk : in STD_LOGIC;
-    i_reset : in STD_LOGIC;
-    i_en : in STD_LOGIC;
-    i_ech : in STD_LOGIC_VECTOR ( 23 downto 0 );
-    o_param : out STD_LOGIC_VECTOR ( 7 downto 0 )
-  );
-  end component design_1_calcul_param_2_0_0;
   signal M10_conversion_affichage_JPmod : STD_LOGIC_VECTOR ( 7 downto 0 );
   signal M8_commande_o_btn_cd : STD_LOGIC_VECTOR ( 3 downto 0 );
   signal M8_commande_o_selection_par : STD_LOGIC_VECTOR ( 1 downto 0 );

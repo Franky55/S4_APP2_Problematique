@@ -2,7 +2,7 @@
    "ActiveEmotionalView":"Default View",
    "Default View_Layers":"/clk_1:false|/i_reset_1:false|/M1_decodeur_i2s/mef_decod_i2s_v1b_0_o_cpt_bit_reset:false|/M9_codeur_i2s/mef_cod_i2s_vsb_0_o_cpt_bit_reset:false|",
    "Default View_ScaleFactor":"0.976594",
-   "Default View_TopLeft":"1195,53",
+   "Default View_TopLeft":"126,306",
    "Display-PortTypeClock":"false",
    "Display-PortTypeReset":"false",
    "ExpandedHierarchyInLayout":"",
@@ -40,8 +40,8 @@ preplace inst M4_fonction3 -pg 1 -lvl 2 -x 1320 -y 400 -defaultsOSRD
 preplace inst M2_fonction_distortion_dure1 -pg 1 -lvl 2 -x 1320 -y 180 -defaultsOSRD
 preplace inst M3_fonction_distorsion_dure2 -pg 1 -lvl 2 -x 1320 -y 280 -defaultsOSRD
 preplace inst parametre_0 -pg 1 -lvl 4 -x 1950 -y 60 -defaultsOSRD
-preplace inst M8_commande -pg 1 -lvl 2 -x 1320 -y 730 -defaultsOSRD
 preplace inst M6_parametre_2 -pg 1 -lvl 4 -x 1950 -y 340 -defaultsOSRD
+preplace inst M8_commande -pg 1 -lvl 2 -x 1320 -y 730 -defaultsOSRD
 preplace inst M1_decodeur_i2s|compteur_7bits -pg 1 -lvl 1 -x 230 -y 492 -defaultsOSRD
 preplace inst M1_decodeur_i2s|registre_24bits_droite -pg 1 -lvl 3 -x 860 -y 612 -defaultsOSRD
 preplace inst M1_decodeur_i2s|registre_24bits_gauche -pg 1 -lvl 3 -x 860 -y 432 -defaultsOSRD

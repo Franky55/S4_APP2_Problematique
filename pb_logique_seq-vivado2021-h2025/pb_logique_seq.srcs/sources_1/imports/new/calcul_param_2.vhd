@@ -50,15 +50,30 @@ architecture Behavioral of calcul_param_2 is
 ---------------------------------------------------------------------------------
 -- Signaux
 ----------------------------------------------------------------------------------
-    
+    signal sum: std_logic_vector(7 downto 0);
+    signal power: std_logic_vector(7 downto 0);
+    signal input: std_logic_vector (23 downto 0); 
 
 ---------------------------------------------------------------------------------------------
 --    Description comportementale
 ---------------------------------------------------------------------------------------------
 begin 
 
+    trasitions: process (i_bclk)
+    begin
+        if (rising_edge(i_bclk)) then
+            if(i_reset = '1') then
+                --reset value
+                sum <= (others => '0');
+            elsif(i_en = '1') then
+                input <= i_ech;
+                --sum <= (7 * sum + 8 * i_ech) / 8;
+            end if;
+            
+        end if;
     
-
-     o_param <= x"02";    -- temporaire ...
-
+         
+    end process;
+    
+o_param <= x"02";    -- temporaire ...
 end Behavioral;

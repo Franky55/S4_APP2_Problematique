@@ -63,14 +63,18 @@ architecture Behavioral of mef_decod_i2s_v1b is
    signal fsm_EtatCourant, fsm_prochainEtat : fsm_cI2S_etats;
    signal   d_reclrc_prec  : std_logic ;  --
    signal outputs : std_logic_vector(4 downto 0);
-    
 begin
 
    --Selection d'etat
-   select_etat: process(i_bclk)
+   select_etat: process(i_bclk, i_reset)
      begin
         if(rising_edge(i_bclk)) then
-            fsm_EtatCourant <= fsm_prochainEtat;
+            if(i_reset = '1') then
+                fsm_EtatCourant <= E0;
+                --fsm_prochainEtat <= E0;
+            else
+                fsm_EtatCourant <= fsm_prochainEtat;
+            end if;
         end if;
      end process;
 
@@ -89,40 +93,32 @@ begin
       end process;
       
 
-    transitionsLecture: process(fsm_EtatCourant, i_bclk)
+    transitionsLecture: process(fsm_EtatCourant, i_bclk, i_cpt_bits, i_lrc)
     begin
         if (rising_edge(i_bclk)) then
             case fsm_EtatCourant is
                 when E1 =>
-                    if (i_cpt_bits = "011000") then
+                    if (i_cpt_bits = 22) then
                         fsm_prochainEtat <= E2;
                     end if;
                 when E2 =>
                     fsm_prochainEtat <= E3;
                 when E4 =>
-                    if (i_cpt_bits = "011000") then
+                    if (i_cpt_bits = 22) then
                         fsm_prochainEtat <= E5;
                     end if;
                 when E5 =>
                     fsm_prochainEtat <= E0;
                 when others =>
             end case;
-          end if;
+        end if;
           
-          if (falling_edge(i_lrc)) then
-            if (fsm_EtatCourant = E0) then
-                fsm_prochainEtat <= E1;
-            else
-                fsm_prochainEtat <= E0;
-            end if;
+        if (falling_edge(i_lrc)) then
+            fsm_prochainEtat <= E1;
         end if;
         
         if (rising_edge(i_lrc)) then
-            if (fsm_EtatCourant = E3) then
-                fsm_prochainEtat <= E4;
-            else
-                fsm_prochainEtat <= E0;
-            end if;
+            fsm_prochainEtat <= E4;
         end if;
 
  end process;
@@ -130,20 +126,20 @@ begin
     setVariables: process(fsm_EtatCourant)
     begin
         case fsm_EtatCourant is
-                when E0     => outputs <= "00001";
-                when E1     => outputs <= "10000";
-                when E2     => outputs <= "01001";
-                when E3     => outputs <= "00001";
-                when E4     => outputs <= "10000";
-                when E5     => outputs <= "00101";
-                when others => outputs <= "00001";
-            end case;
+            when E0     => outputs <= "00001";
+            when E1     => outputs <= "10000";
+            when E2     => outputs <= "01000";
+            when E3     => outputs <= "00001";
+            when E4     => outputs <= "10000";
+            when E5     => outputs <= "00100";
+            when others => outputs <= "00001";
+        end case;
     end process;
     
-    o_bit_enable    <= outputs(0);
-    o_load_left     <= outputs(1);
+    o_bit_enable    <= outputs(4);
+    o_load_left     <= outputs(3);
     o_load_right    <= outputs(2);
-    --o_str_dat     <= outputs(3);
-    o_cpt_bit_reset <= outputs(4);
+    --o_str_dat     <= outputs(1);
+    o_cpt_bit_reset <= outputs(0);
 
 end Behavioral;

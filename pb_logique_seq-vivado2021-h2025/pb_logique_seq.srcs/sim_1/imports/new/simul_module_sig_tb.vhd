@@ -190,7 +190,7 @@ begin
           clk      =>  d_ac_bclk,
           i_reset     =>  s_reset,
           i_lrc       =>  d_ac_pblrc,
-          i_data       =>  d_sig_pbdat,
+          i_data       =>  d_ac_pbdat,--d_sig_pbdat,
           o_dat_left  =>  d_ech_reg_left,
           o_dat_right =>  d_ech_reg_right,
           o_str_dat   =>  open
