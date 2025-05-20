@@ -42,33 +42,33 @@ architecture Behavioral of calcul_param_1 is
     type etat_type is (IDLE, ACTIF, CHECK, OUTPARAM);
     signal etat, etat_suiv : etat_type;
 
-    signal countCLK : std_logic_vector (7 downto 0) := "00000000";
-    signal countUp        : std_logic_vector (1 downto 0) := "00";
-    signal last        : std_logic;
-    signal countCLK222 : std_logic_vector (7 downto 0) := "00000000" ;
-    signal i_ech_Average3 : std_logic_vector (23 downto 0);
-    signal i_ech_Average : std_logic_vector (23 downto 0);
-    signal i_ech_prev : std_logic_vector (23 downto 0) := i_ech;
-    signal i_ech_prevprev : std_logic_vector (23 downto 0) := i_ech;
+    signal countCLK         : std_logic_vector (7 downto 0) := "00000000";
+    signal countUp          : std_logic_vector (1 downto 0) := "00";
+    signal last             : std_logic;
+    signal count_CLK_period : std_logic_vector (7 downto 0) := "00000000" ;
+    signal i_ech_Average3   : std_logic_vector (23 downto 0);
+    signal i_ech_Average    : std_logic_vector (23 downto 0);
+    signal i_ech_prev       : std_logic_vector (23 downto 0) := i_ech;
+    signal i_ech_prev_prev   : std_logic_vector (23 downto 0) := i_ech;
 
 begin
 
-    process(i_bclk)
+    compteur_etat: process(i_bclk)
     begin
         if rising_edge(i_bclk) then
-            countCLK222 <= countCLK222 + 1;
+            count_CLK_period <= count_CLK_period + 1;
             etat <= etat_suiv;
         end if;
     end process;
 
-    process(i_en, i_ech)
+    average: process(i_en, i_ech)
     begin
         if(i_en = '1') then
-            i_ech_Average <= i_ech + i_ech_prev + i_ech_prevprev;
+            i_ech_Average <= i_ech + i_ech_prev + i_ech_prev_prev;
             i_ech_Average3 <= std_logic_vector(signed(i_ech_Average) / 3);
 
             i_ech_prev <= i_ech;
-            i_ech_prevprev <= i_ech_prev;
+            i_ech_prev_prev <= i_ech_prev;
         end if;
     end process;
 
