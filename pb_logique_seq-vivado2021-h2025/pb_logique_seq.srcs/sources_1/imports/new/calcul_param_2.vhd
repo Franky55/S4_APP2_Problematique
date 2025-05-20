@@ -88,7 +88,7 @@ begin
 --    end process;
 
 
-    trasitions: process (i_bclk, EtatCourant, i_ech, sum, input)
+    trasitions: process (i_bclk, EtatCourant, i_ech, sum, input, i_reset)
     begin
             if(i_reset = '1') then
                 sum <= to_unsigned(0, 48);
