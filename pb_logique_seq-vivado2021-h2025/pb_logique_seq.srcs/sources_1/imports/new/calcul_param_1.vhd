@@ -39,12 +39,13 @@ entity calcul_param_1 is
 end calcul_param_1;
 
 architecture Behavioral of calcul_param_1 is
-    type etat_type is (IDLE, ACTIF, CHECK, OUTPARAM);
-    signal etat, etat_suiv : etat_type;
+    type etat_type is (IDLE, CHECK_PASSE_ZERO, CHECK_PERIODE, COUNT, OUTPARAM);
+    signal etat_courant, etat_suiv : etat_type;
 
     signal countCLK         : std_logic_vector (7 downto 0) := "00000000";
-    signal count_transition : std_logic_vector (1 downto 0) := "00";
-    signal last_data        : std_logic;
+    signal signal_output    : std_logic_vector (7 downto 0) := "00000000";
+    signal count_transition_zero : std_logic_vector (1 downto 0) := "00";
+    signal last_data_MSB    : std_logic;
     signal count_CLK_period : std_logic_vector (7 downto 0) := "00000000" ;
     signal i_ech_Average3   : std_logic_vector (23 downto 0);
     signal i_ech_Average    : std_logic_vector (23 downto 0);
@@ -56,8 +57,12 @@ begin
     compteur_etat: process(i_bclk)
     begin
         if rising_edge(i_bclk) then
-            count_CLK_period <= count_CLK_period + 1;
-            etat <= etat_suiv;
+            if (i_reset = '1') then
+                etat_courant <= IDLE;
+                
+            else
+                etat_courant <= etat_suiv;
+            end if;
         end if;
     end process;
 
@@ -72,53 +77,63 @@ begin
         end if;
     end process;
 
-    process(etat, i_en, count_transition)
+    process(i_bclk, etat_courant, i_en, count_transition_zero, i_ech_Average3(23), last_data_MSB)
     begin
-         case etat is
+         case etat_courant is
             when IDLE =>
-                IF(i_en = '1') then
-                    etat_suiv <= ACTIF;
-                ELSE
+                if(i_en = '1') then
+                    etat_suiv <= CHECK_PASSE_ZERO;
+                end if;
+            when CHECK_PASSE_ZERO =>
+                if(i_en = '1' AND i_ech_Average3(23) = '1' AND last_data_MSB = '0') then
+                    etat_suiv <= COUNT;
+                elsif(i_en = '1') then
+                    etat_suiv <= CHECK_PERIODE;
+                else
+                    etat_suiv <= CHECK_PASSE_ZERO;
+                end if;
+            when CHECK_PERIODE =>
+                if(count_transition_zero = 2) then
+                     etat_suiv <= OUTPARAM;
+                else
+                     etat_suiv <= CHECK_PASSE_ZERO;
+                end if;
+            when COUNT =>
+                etat_suiv <= CHECK_PASSE_ZERO;
+            when OUTPARAM =>
+                if rising_edge(i_bclk) then
                     etat_suiv <= IDLE;
                 end if;
-            when ACTIF =>
-                if(i_en = '1') then
-                    etat_suiv <= CHECK;
-                end if;
-            when CHECK =>
-                if(count_transition = 2) then
-                     etat_suiv <= OUTPARAM;
-                end if;
-            when OUTPARAM =>
-                etat_suiv <= IDLE;
             when others =>
-                etat_suiv <= IDLE;
+                if rising_edge(i_bclk) then
+                    etat_suiv <= IDLE;
+                end if;
         end case;
     end process;
 
-    process(etat, i_ech_Average3, last_data, count_transition)
+    process(etat_courant)
     begin
-        case etat is
+        case etat_courant is
             when IDLE =>
                 countCLK <= "00000000";
-                count_transition <= "00";
-                last_data <= '0';
+                count_transition_zero <= "00";
+                last_data_MSB <= '0';
 
-            when ACTIF =>
+            when CHECK_PASSE_ZERO =>
                 countCLK <= countCLK + 1;
-            when CHECK =>
+            when CHECK_PERIODE =>
                 countCLK <= countCLK + 1;
-                if(i_ech_Average3(23) = '1' AND last_data = '0') then
-                    count_transition <= count_transition + 1;
-                end if;
-                last_data <= i_ech_Average3(23);
+                last_data_MSB <= i_ech_Average3(23);
+            when COUNT =>
+                countCLK <= countCLK + 1;
+                count_transition_zero <= count_transition_zero + 1;
+                last_data_MSB <= i_ech_Average3(23);
            when OUTPARAM =>
-                if(count_transition = 2) then
-                    o_param <= countCLK;
-                end if;
-
-            when others =>
+                signal_output <= countCLK;
+           when others =>
 
        end case;
     end process;
+    
+    o_param <= signal_output;
 end Behavioral;

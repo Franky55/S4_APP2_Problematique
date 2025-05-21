@@ -36,6 +36,7 @@ file rightInputFile : text;
 --Chemin depuis le fichier de simulation les fichiers se trouvent à la racine du projet
 constant leftInputFileName : string := "../../../../leftInput.txt"; 
 constant rightInputFileName : string := "../../../../rightInput.txt";
+--constant rightInputFileName : string := "../../../../signals/cosinusSignalHexa_22000Hz.txt";
 
 shared variable fstatusLeft : file_open_status := NAME_ERROR;
 shared variable fstatusRight : file_open_status := NAME_ERROR;
@@ -285,7 +286,7 @@ end process;
         wait for 2 us;
         s_reset <= '0';
         s_btn <= "0000";
-        s_sw <= "0000";
+        s_sw <= "0001";
         wait for 40 us;
                  
         WAIT; -- will wait forever

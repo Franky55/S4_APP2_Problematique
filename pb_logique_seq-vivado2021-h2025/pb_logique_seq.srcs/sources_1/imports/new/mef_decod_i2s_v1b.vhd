@@ -126,12 +126,12 @@ begin
     setVariables: process(fsm_EtatCourant)
     begin
         case fsm_EtatCourant is
-            when Wait_L     => outputs <= "00001";
+            when Wait_L     => outputs <= "00101";
             when Read_L     => outputs <= "10000";
-            when Send_L     => outputs <= "01000";
-            when Wait_R     => outputs <= "00001";
+            when Send_L     => outputs <= "01010";
+            when Wait_R     => outputs <= "01001";
             when Read_R     => outputs <= "10000";
-            when Send_R     => outputs <= "00100";
+            when Send_R     => outputs <= "00110";
             when others => outputs <= "00001";
         end case;
     end process;
@@ -139,7 +139,7 @@ begin
     o_bit_enable    <= outputs(4);
     o_load_left     <= outputs(3);
     o_load_right    <= outputs(2);
-    --o_str_dat     <= outputs(1);
+    o_str_dat     <= outputs(1);
     o_cpt_bit_reset <= outputs(0);
 
 end Behavioral;

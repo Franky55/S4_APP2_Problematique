@@ -88,23 +88,23 @@ begin
 --    end process;
 
 
-    trasitions: process (i_bclk, EtatCourant, i_ech, sum, input, i_reset)
-    begin
-            if(i_reset = '1') then
-                sum <= to_unsigned(0, 48);
-                o_param <= "00000000";
-            end if;
-            if (i_en = '1') then
-                input <= UNSIGNED(signed(i_ech) * signed(i_ech));
-                --multiplication <= RESIZE((multi * sum), 48);
-                if (sum > 0) then
-                    division <= RESIZE(((multi * sum) / div), 48);
-                else
-                    division <= to_unsigned(0, 48);
-                end if;
-                sum <= division + input;
-                o_param <= std_logic_vector(sum(47 downto 40));
-            end if;
+--    trasitions: process (i_bclk, EtatCourant, i_ech, sum, input, i_reset)
+--    begin
+--            if(i_reset = '1') then
+--                sum <= to_unsigned(0, 48);
+--                o_param <= "00000000";
+--            end if;
+--            if (i_en = '1') then
+--                input <= UNSIGNED(signed(i_ech) * signed(i_ech));
+--                --multiplication <= RESIZE((multi * sum), 48);
+--                if (sum > 0) then
+--                    division <= RESIZE(((multi * sum) / div), 48);
+--                else
+--                    division <= to_unsigned(0, 48);
+--                end if;
+--                sum <= division + input;
+--                o_param <= std_logic_vector(sum(47 downto 40));
+--            end if;
             
 --        if (rising_edge(i_bclk)) then
 --            input <= unsigned(signed(i_ech) * signed(i_ech));
@@ -134,6 +134,6 @@ begin
 --                when others =>
 --            end case;
 --        end if;
-    end process;
+--    end process;
     
 end Behavioral;
