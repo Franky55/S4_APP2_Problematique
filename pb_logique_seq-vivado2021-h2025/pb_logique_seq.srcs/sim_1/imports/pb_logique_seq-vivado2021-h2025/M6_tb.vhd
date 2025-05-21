@@ -60,16 +60,24 @@ begin
 
         -- Apply first input sample
         i_en <= '1';
-        i_ech <= x"0000FF"; -- Sample input
+        i_ech <= "011111100001111111111111"; -- Sample input
         wait for CLK_PERIOD;
+        i_en <= '0';
+        wait for CLK_PERIOD*100;
 
         -- Apply second input
-        i_ech <= x"00FF00";
+        i_en <= '1';
+        i_ech <= "011111100001110111111111";
         wait for CLK_PERIOD;
+        i_en <= '0';
+        wait for CLK_PERIOD*100;
 
         -- Apply third input
-        i_ech <= x"FF0000";
+        i_en <= '1';
+        i_ech <= "011111100001111111111011";
         wait for CLK_PERIOD;
+        i_en <= '0';
+        wait for CLK_PERIOD*100;
 
         i_en <= '0';  -- Disable input
         wait for 50 ns;

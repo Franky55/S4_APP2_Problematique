@@ -56,45 +56,84 @@ architecture Behavioral of calcul_param_2 is
 ---------------------------------------------------------------------------------
 -- Signaux
 ----------------------------------------------------------------------------------
-    signal sum: unsigned(63 downto 0) := (others => '0');
-    signal input: unsigned (63 downto 0); 
+    constant multi : unsigned(4 downto 0) := "11111";
+    constant div : unsigned(5 downto 0) := "100000";
+    
+    signal sum: unsigned(47 downto 0) := (others => '0');
+    signal division: unsigned(47 downto 0) := (others => '0');
+    signal multiplication: unsigned(47 downto 0) := (others => '0');
+    signal input: unsigned (47 downto 0); 
     signal EtatNext, EtatCourant : type_etat ;
+    
 
 ---------------------------------------------------------------------------------------------
 --    Description comportementale
 ---------------------------------------------------------------------------------------------
 begin 
 
-    trasitions: process (i_bclk, EtatCourant, i_ech, sum)
+--    process (i_bclk)
+--    begin
+--        if rising_edge(i_bclk) then
+--            if i_reset = '1' then
+--                sum <= (others => '0');
+--                o_param <= (others => '0');
+--            elsif i_en = '1' then
+--                input <= unsigned(signed(i_ech) * signed(i_ech));
+--                multiplication <= RESIZE(multi * sum, 48);
+--                division <= RESIZE(multiplication / div, 48);
+--                sum <= division + input;
+--                o_param <= std_logic_vector(sum(47 downto 40));
+--            end if;
+--        end if;
+--    end process;
+
+
+    trasitions: process (i_bclk, EtatCourant, i_ech, sum, input)
     begin
-        if (rising_edge(i_bclk)) then
-            input <= resize(unsigned(i_ech), 64);
-            
             if(i_reset = '1') then
-                EtatCourant <= INIT;
-                sum <= to_unsigned(0, 64);
+                sum <= to_unsigned(0, 48);
                 o_param <= "00000000";
-            else
-                EtatCourant <= EtatNext;
             end if;
-            case (EtatCourant) is
-                when INIT =>
-                    if (i_en = '1') then
-                        EtatNext <= SOMMATION;
-                    end if;
-                when SOMMATION => 
-                    EtatNext <= CONVERTION;
-                    sum <= ((31/32) * sum) + (input * input);
-                when CONVERTION => 
-                    EtatNext <= IDLE;
-                    o_param <= std_logic_vector(sum(63 downto 56));
-                when IDLE =>
-                    if (i_en = '1') then
-                        EtatNext <= SOMMATION;
-                    end if;
-                when others =>
-            end case;
-        end if;
+            if (i_en = '1') then
+                input <= UNSIGNED(signed(i_ech) * signed(i_ech));
+                --multiplication <= RESIZE((multi * sum), 48);
+                if (sum > 0) then
+                    division <= RESIZE(((multi * sum) / div), 48);
+                else
+                    division <= to_unsigned(0, 48);
+                end if;
+                sum <= division + input;
+                o_param <= std_logic_vector(sum(47 downto 40));
+            end if;
+            
+--        if (rising_edge(i_bclk)) then
+--            input <= unsigned(signed(i_ech) * signed(i_ech));
+            
+--            if(i_reset = '1') then
+--                EtatCourant <= INIT;
+--                sum <= to_unsigned(0, 48);
+--                o_param <= "00000000";
+--            else
+--                EtatCourant <= EtatNext;
+--            end if;
+--            case (EtatCourant) is
+--                when INIT =>
+--                    if (i_en = '1') then
+--                        EtatNext <= SOMMATION;
+--                    end if;
+--                when SOMMATION => 
+--                    EtatNext <= CONVERTION;
+--                    sum <= RESIZE(((multi * sum) / div), 48) + input;
+--                when CONVERTION => 
+--                    EtatNext <= IDLE;
+--                    o_param <= std_logic_vector(sum(47 downto 40));
+--                when IDLE =>
+--                    if (i_en = '1') then
+--                        EtatNext <= SOMMATION;
+--                    end if;
+--                when others =>
+--            end case;
+--        end if;
     end process;
     
 end Behavioral;
