@@ -47,10 +47,10 @@ architecture Behavioral of calcul_param_1 is
     signal count_transition_zero : std_logic_vector (1 downto 0) := "00";
     signal last_data_MSB    : std_logic;
     signal count_CLK_period : std_logic_vector (7 downto 0) := "00000000" ;
-    signal i_ech_Average3   : std_logic_vector (23 downto 0);
-    signal i_ech_Average    : std_logic_vector (23 downto 0);
-    signal i_ech_prev       : std_logic_vector (23 downto 0) := i_ech;
-    signal i_ech_prev_prev  : std_logic_vector (23 downto 0) := i_ech;
+    signal i_ech_Average3   : signed (23 downto 0);
+    signal i_ech_Average    : signed (23 downto 0);
+    signal i_ech_prev       : signed (23 downto 0) := signed(i_ech);
+    signal i_ech_prev_prev  : signed (23 downto 0) := signed(i_ech);
 
 begin
 
@@ -69,10 +69,10 @@ begin
     average: process(i_en, i_ech)
     begin
         if(i_en = '1') then
-            i_ech_Average <= i_ech + i_ech_prev + i_ech_prev_prev;
-            i_ech_Average3 <= std_logic_vector(signed(i_ech_Average) / 3);
+            i_ech_Average <= signed(i_ech) + i_ech_prev + i_ech_prev_prev;
+            i_ech_Average3 <= signed(i_ech_Average) / 3;
 
-            i_ech_prev <= i_ech;
+            i_ech_prev <= signed(i_ech);
             i_ech_prev_prev <= i_ech_prev;
         end if;
     end process;
