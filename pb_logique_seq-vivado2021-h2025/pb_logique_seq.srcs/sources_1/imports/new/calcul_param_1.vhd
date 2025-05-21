@@ -43,13 +43,13 @@ architecture Behavioral of calcul_param_1 is
     signal etat, etat_suiv : etat_type;
 
     signal countCLK         : std_logic_vector (7 downto 0) := "00000000";
-    signal countUp          : std_logic_vector (1 downto 0) := "00";
-    signal last             : std_logic;
+    signal count_transition : std_logic_vector (1 downto 0) := "00";
+    signal last_data        : std_logic;
     signal count_CLK_period : std_logic_vector (7 downto 0) := "00000000" ;
     signal i_ech_Average3   : std_logic_vector (23 downto 0);
     signal i_ech_Average    : std_logic_vector (23 downto 0);
     signal i_ech_prev       : std_logic_vector (23 downto 0) := i_ech;
-    signal i_ech_prev_prev   : std_logic_vector (23 downto 0) := i_ech;
+    signal i_ech_prev_prev  : std_logic_vector (23 downto 0) := i_ech;
 
 begin
 
@@ -72,7 +72,7 @@ begin
         end if;
     end process;
 
-    process(etat, i_en, countUp)
+    process(etat, i_en, count_transition)
     begin
          case etat is
             when IDLE =>
@@ -82,16 +82,12 @@ begin
                     etat_suiv <= IDLE;
                 end if;
             when ACTIF =>
-                IF(i_en = '1') then
+                if(i_en = '1') then
                     etat_suiv <= CHECK;
-                else
-                    etat_suiv <= ACTIF;
                 end if;
             when CHECK =>
-                IF(countUp = "10") then
+                if(count_transition = 2) then
                      etat_suiv <= OUTPARAM;
-                else
-                     etat_suiv <= ACTIF;
                 end if;
             when OUTPARAM =>
                 etat_suiv <= IDLE;
@@ -100,24 +96,24 @@ begin
         end case;
     end process;
 
-    process(etat)
+    process(etat, i_ech_Average3, last_data, count_transition)
     begin
         case etat is
             when IDLE =>
                 countCLK <= "00000000";
-                countUP <= "00";
-                last <= '0';
+                count_transition <= "00";
+                last_data <= '0';
 
             when ACTIF =>
                 countCLK <= countCLK + 1;
             when CHECK =>
                 countCLK <= countCLK + 1;
-                if(i_ech_Average3(23) = '1' AND last = '0') then
-                    countUP <= countUP + 1;
+                if(i_ech_Average3(23) = '1' AND last_data = '0') then
+                    count_transition <= count_transition + 1;
                 end if;
-                last <= i_ech_Average3(23);
+                last_data <= i_ech_Average3(23);
            when OUTPARAM =>
-                if(countUP = "10") then
+                if(count_transition = 2) then
                     o_param <= countCLK;
                 end if;
 
